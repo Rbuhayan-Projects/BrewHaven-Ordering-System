@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Brew Haven</title>
+    <link rel="stylesheet" th:href="@{/checkout.css}">
+</head>
+<body>
+
+<header class="topbar">
+    <a class="back" th:href="@{/menu}">&larr; Menu</a>
+    <h1 class="brand">Brew<span>Haven</span></h1>
+</header>
+
+<main class="page">
+
+    <!-- Shown when the cart is empty -->
+    <section class="panel empty" id="emptyBox" hidden>
+        <div class="big-emoji">🛒</div>
+        <h2>Your order is empty</h2>
+        <p>Add something tasty from the menu first.</p>
+        <a class="primary-btn link" th:href="@{/menu}">Back to Menu</a>
+    </section>
+
+    <!-- Shown when there are items -->
+    <div id="formBox" hidden>
+
+        <h2 class="title">Checkout</h2>
+
+        <section class="panel">
+            <h3>Your Order</h3>
+            <ul class="summary" id="summary"></ul>
+            <div class="total-row">
+                <span>Total</span>
+                <strong id="total">₱0.00</strong>
+            </div>
+            <a class="edit-link" th:href="@{/menu}">Edit order</a>
+        </section>
+
+        <section class="panel">
+            <h3>How will you enjoy it?</h3>
+            <div class="segmented">
+                <input type="radio" name="orderType" id="dineIn" value="Dine In" checked>
+                <label for="dineIn">🍽️ Dine In</label>
+                <input type="radio" name="orderType" id="takeOut" value="Take Out">
+                <label for="takeOut">🥡 Take Out</label>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h3>Your name</h3>
+            <input type="text" id="customerName" maxlength="40"
+                   placeholder="So we can call you when it's ready" autocomplete="off">
+            <p class="note">💵 Pay at the counter when you pick up your order.</p>
+        </section>
+
+        <p class="error" id="error" role="alert"></p>
+
+        <button type="button" class="primary-btn" id="placeBtn">Place Order</button>
+    </div>
+</main>
+
+<script>
+    var cart = {};
+    try { cart = JSON.parse(sessionStorage.getItem('cart')) || {}; } catch (e) { cart = {}; }
+
+    var lines = Object.keys(cart).map(function (k) { return cart[k]; });
+
+    function money(n) { return '₱' + n.toFixed(2); }
+
+    function renderSummary() {
+        var list = document.getElementById('summary');
+        var total = 0;
+        lines.forEach(function (l) {
+            var sub = l.qty * l.price;
+            total += sub;
+
+            var li = document.createElement('li');
+
+            var left = document.createElement('div');
+            left.className = 's-name';
+            left.textContent = l.qty + ' × ' + l.name;
+
+            var right = document.createElement('div');
+            right.className = 's-sub';
+            right.textContent = money(sub);
+
+            li.appendChild(left);
+            li.appendChild(right);
+            list.appendChild(li);
+        });
+        document.getElementById('total').textContent = money(total);
+    }
+
+    if (lines.length === 0) {
+        document.getElementById('emptyBox').hidden = false;
+    } else {
+        document.getElementById('formBox').hidden = false;
+        renderSummary();
+    }
+
+    document.getElementById('placeBtn').addEventListener('click', function () {
+        var btn = this;
+        var err = document.getElementById('error');
+        var nameInput = document.getElementById('customerName');
+        err.textContent = '';
+
+        var name = nameInput.value.trim();
+        if (!name) {
+            err.textContent = 'Please enter your name.';
+            nameInput.focus();
+            return;
+        }
+
+        var payload = {
+            orderType: document.querySelector('input[name="orderType"]:checked').value,
+            customerName: name,
+            items: lines.map(function (l) { return { id: Number(l.id), qty: l.qty }; })
+        };
+
+        btn.disabled = true;
+        btn.textContent = 'Placing order...';
+
+        fetch('/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+            .then(function (res) {
+                return res.json().catch(function () { return {}; }).then(function (data) {
+                    return { ok: res.ok, data: data };
+                });
+            })
+            .then(function (r) {
+                if (!r.ok) { throw new Error(r.data.error || 'Something went wrong. Please try again.'); }
+                try { sessionStorage.removeItem('cart'); } catch (e) {}
+                window.location.href = '/order/' + encodeURIComponent(r.data.orderNumber);
+            })
+            .catch(function (e) {
+                err.textContent = e.message || 'Could not place your order. Please try again.';
+                btn.disabled = false;
+                btn.textContent = 'Place Order';
+            });
+    });
+</script>
+</body>
+</html>

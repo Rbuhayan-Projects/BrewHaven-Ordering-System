@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed | Brew Haven</title>
+    <link rel="stylesheet" th:href="@{/checkout.css}">
+</head>
+<body>
+
+<header class="topbar">
+    <h1 class="brand">Brew<span>Haven</span></h1>
+</header>
+
+<main class="page">
+
+    <section class="panel ticket">
+        <div class="check">✓</div>
+        <h2>Order placed!</h2>
+        <p class="sub">Thank you, <strong th:text="${order.customerName}">Name</strong>.</p>
+
+        <div class="number-box">
+            <span class="label">Your order number</span>
+            <span class="number" th:text="${order.orderNumber}">A-001</span>
+        </div>
+
+        <span class="chip" th:text="${order.orderType}">Dine In</span>
+
+        <ul class="summary">
+            <li th:each="line : ${order.lines}">
+                <div class="s-name" th:text="${line.qty + ' × ' + line.name}">1 × Item</div>
+                <div class="s-sub" th:text="'₱' + ${#numbers.formatDecimal(line.subtotal, 1, 2)}">₱0.00</div>
+            </li>
+        </ul>
+
+        <div class="total-row">
+            <span>Total</span>
+            <strong th:text="'₱' + ${#numbers.formatDecimal(order.total, 1, 2)}">₱0.00</strong>
+        </div>
+
+        <p class="note">💵 Please show this number at the counter and pay there.</p>
+
+        <a class="primary-btn link" th:href="@{/}">New Order</a>
+    </section>
+</main>
+
+</body>
+</html>

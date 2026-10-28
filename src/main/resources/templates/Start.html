@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Brew Haven</title>
+    <link rel="stylesheet" th:href="@{/start.css}">
+</head>
+<body>
+<span class="float f1">☕</span>
+<span class="float f2">🥐</span>
+<span class="float f3">🍰</span>
+<span class="float f4">🧁</span>
+<span class="float f5">🍩</span>
+<span class="float f6">🥛</span>
+
+<main class="start-screen">
+    <div class="badge">Welcome</div>
+    <h1 class="brand">Brew<span>Haven</span></h1>
+    <p class="tagline">Freshly brewed coffee and baked treats, made just for you.</p>
+
+    <a class="start-btn" th:href="@{/menu}">
+        Start Order <span class="arrow">&rarr;</span>
+    </a>
+
+    <p class="hint">TAP TO BEGIN</p>
+</main>
+</body>
+</html>
