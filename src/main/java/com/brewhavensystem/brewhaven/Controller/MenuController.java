@@ -26,7 +26,7 @@ public class MenuController {
                 // Iced Coffee
                 new MenuItem(5, "Iced Americano", "Chilled espresso over ice", 105.00, "Iced Coffee", "iceamerikano.jpg"),
                 new MenuItem(6, "Iced Latte", "Espresso and cold milk over ice", 130.00, "Iced Coffee",  "icelatte.jpg"),
-                new MenuItem(7, "Spanish Latte", "Sweet condensed milk with espresso", 145.00, "Iced Coffee", "spanishsatte.jpg"),
+                new MenuItem(7, "Spanish Latte", "Sweet condensed milk with espresso", 145.00, "Iced Coffee", "spanishslatte.jpg"),
                 new MenuItem(8, "Cold Brew", "Slow-steeped for 18 hours, super smooth", 125.00, "Iced Coffee", "coldbrew.jpg"),
 
                 // Non-Coffee
